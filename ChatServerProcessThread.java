@@ -27,12 +27,16 @@ public class ChatServerProcessThread extends Thread{
     @Override
     public void run() {
         try {
+        	
             BufferedReader buffereedReader =
                     new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 
             PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-
+            
             while(true) {
+
+                  
+            	
                 String request = buffereedReader.readLine();
 
                 if( request == null) {
@@ -40,7 +44,15 @@ public class ChatServerProcessThread extends Thread{
                     doQuit(printWriter);
                     break;
                 }
-
+                
+                if(GUI.informButtonPressed()) {
+       	         broadcast("inform:"+GUI.getMessage());  
+       	         GUI.disableButton();
+       	         GUI.updateLog("공지사항 전송이 완료되었습니다.");
+       	         }
+       			 
+                
+                
                 String[] tokens = request.split(":");
                 if("join".equals(tokens[0])) {
                     doJoin(tokens[1], printWriter);
@@ -51,7 +63,8 @@ public class ChatServerProcessThread extends Thread{
                 else if("quit".equals(tokens[0])) {
                     doQuit(printWriter);
                 }
-                
+               
+         
                 
             }
         }
@@ -61,6 +74,7 @@ public class ChatServerProcessThread extends Thread{
         	GUI.updateUserText();
         	
             consoleLog(this.nickname + " 님이 채팅방을 나갔습니다.");
+            broadcast(this.nickname + " 님이 채팅방을 나갔습니다.");
         }
     }
 
@@ -72,6 +86,7 @@ public class ChatServerProcessThread extends Thread{
         removeWriter(writer);
 
         String data = this.nickname + " 님이 퇴장했습니다.";
+        GUI.updateLog(data);
         broadcast(data);
     }
 
@@ -83,6 +98,7 @@ public class ChatServerProcessThread extends Thread{
 
     private void doMessage(String data) {
         broadcast(this.nickname + ":" + data);
+        GUI.updateChatLog(this.nickname + ":" + data);
     }
 
     private void doJoin(String nickname, PrintWriter writer) {
@@ -93,6 +109,7 @@ public class ChatServerProcessThread extends Thread{
         this.nickname = nickname;
 
         String data = nickname + " 님이 입장하였습니다.";
+        GUI.updateLog(data);
         broadcast(data);
 
         // writer pool에 저장
@@ -105,7 +122,7 @@ public class ChatServerProcessThread extends Thread{
         }
     }
 
-    private void broadcast(String data) {
+    public void broadcast(String data) {
         synchronized (listWriters) {
             for(PrintWriter writer : listWriters) {
                 writer.println(data);
@@ -119,3 +136,4 @@ public class ChatServerProcessThread extends Thread{
     }
     
 }
+

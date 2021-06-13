@@ -44,6 +44,7 @@ public class Client_main extends JFrame {
   
     
 	public Client_main(String name,Socket socket) {
+		setTitle("Chatting");
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent arg0) {
@@ -200,7 +201,7 @@ public class Client_main extends JFrame {
 		
 		jl = new JLabel();
 		contentPane.add(jl);
-		jl.setBounds(0, 0, 450, 541);
+		jl.setBounds(0, 0, 444, 512);
 		
 		 new ChatClientReceiveThread(socket).start();
 		 
@@ -237,8 +238,17 @@ public class Client_main extends JFrame {
 	                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 	                while(true) {
 	                    String msg = br.readLine();
+	                    String[] tokens = msg.split(":");
+	                    
+	                    if("inform".equals(tokens[0])) {
+	                    	
+	                    	JOptionPane.showMessageDialog(null, "공지사항\n내용 : "+tokens[1]);
+	                    	textArea.append("[알림] "+time+"에 공지사항을 받았습니다  내용 : " + tokens[1]+"\n");
+	                    	
+	                    } else {
 	                    textArea.append("["+time+"] " + msg);
 	                    textArea.append("\n");
+	                    }
 	                }
 	            }
 	            catch (IOException e) {

@@ -35,19 +35,14 @@ public class ChatServer {
     static int count = 0;
     
     public static void main(String[] args) {
-    	
-    	GUI = new gui();
-    	GUI.getContentPane().setBackground(SystemColor.activeCaption);
-    	GUI.setVisible(true);
 
         ServerSocket serverSocket = null;
         List<PrintWriter> listWriters = new ArrayList();
-       
+        openGUI();
   
         try {
             // 1. 서버 소켓 생성
             serverSocket = new ServerSocket();
-
             // 2. 바인딩
             String hostAddress = InetAddress.getLocalHost().getHostAddress();
             serverSocket.bind( new InetSocketAddress(hostAddress, PORT) );
@@ -77,5 +72,13 @@ public class ChatServer {
 
     private static void consoleLog(String log) {
         GUI.updateLog("[server " + Thread.currentThread().getId() + "] " + log);
+    }
+    
+    public static void openGUI() {
+    	
+    	GUI = new gui();
+    	GUI.getContentPane().setBackground(SystemColor.activeCaption);
+    	GUI.setVisible(true);
+    	
     }
 }
